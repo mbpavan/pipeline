@@ -613,7 +613,12 @@ func TestCreateOrUpdateAffinityAssistantsAndPVCs_Failure(t *testing.T) {
 				t.Errorf("expect error from createOrUpdateAffinityAssistantsAndPVCs but got nil")
 			}
 
-			if tc.failureType == "statefulset" {
+			switch tc.failureType {
+			case "pvc":
+				if !errors.Is(err, ErrPvcCreationFailed) {
+					t.Errorf("expected err type mismatching, expecting %v but got: %v", ErrPvcCreationFailed, err)
+				}
+			case "statefulset":
 				if !errors.Is(err, ErrAffinityAssistantCreationFailed) {
 					t.Errorf("expected err type mismatching, expecting %v but got: %v", ErrAffinityAssistantCreationFailed, err)
 				}
